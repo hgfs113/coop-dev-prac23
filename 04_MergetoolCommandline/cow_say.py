@@ -10,6 +10,7 @@ class cowsay_cmd(cmd.Cmd):
     def do_list_cows(self, args):
         """To list all cowfiles on the current COWPATH
         Usage: list_cows [dir]
+            :param dir: directory for searching cows = default: COWPATH
 
         """
         if len(args) > 0:
@@ -20,10 +21,11 @@ class cowsay_cmd(cmd.Cmd):
 
     def do_make_bubble(self, args):
         """This is make_bubble help
-        Usage: make_bubble text
-            [param: --brackets: cowsay / cowthink = defult: cowsay]
-            [param: --width: int = defult: 40]
-            [param: --wrap-text: bool = defult: True]
+        Usage: make_bubble text [-b brackets] [-W width] [-w wrap-text]
+            :param brackets: cowsay / cowthink = defult: cowsay
+            :param width: int = defult: 40
+            :param wrap-text: bool = defult: True
+
         """
         text, *options = shlex.split(args)
         brackets = cowsay.THOUGHT_OPTIONS["cowsay"]
@@ -32,11 +34,11 @@ class cowsay_cmd(cmd.Cmd):
         if options:
             assert len(options) % 2 == 0, "Bad parameters"
             for opt, val in zip(options[::2], options[1::2]):
-                if opt == "--brackets":
+                if opt == "-b":
                     brackets = cowsay.THOUGHT_OPTIONS[val]
-                elif opt == "--width":
+                elif opt == "-W":
                     width = int(val)
-                elif opt == "--wrap-text":
+                elif opt == "-w":
                     wrap_text = val.lower() == "true" or val.lower() == "y" or \
                             val.lower() == "yes" or val.lower() == "da"
         print(cowsay.make_bubble(text, brackets=brackets, width=width, wrap_text=wrap_text))
@@ -46,13 +48,13 @@ class cowsay_cmd(cmd.Cmd):
         corresponding options in the cowsay command. Returns the resulting cowsay
         string
         Usage: cowsay text [-e eyes] [-T tongue] [-f cow]
-        :param text: The message to be displayed
-        :param eyes: eye_string = default: 'oo'
-        :param tongue: tongue_string = default: '  '
-        :param cow: the available cows can be found by calling list_cows = default: 'default'
+            :param text: The message to be displayed
+            :param eyes: eye_string = default: 'oo'
+            :param tongue: tongue_string = default: '  '
+            :param cow: the available cows can be found by calling list_cows = default: 'default'
 
         """
-        text, named_params = self.get_cow_do_opts(args)
+        text, named_params = self._get_cow_do_opts(args)
         print(cowsay.cowsay(text, **named_params))
 
     def do_cowthink(self, args):
@@ -60,17 +62,20 @@ class cowsay_cmd(cmd.Cmd):
         corresponding options in the cowsay command. Returns the resulting cowsay
         string
         Usage: cowsay text [-e eyes] [-T tongue] [-f cow]
-        :param text: The message to be displayed
-        :param eyes: eye_string = default: 'oo'
-        :param tongue: tongue_string = default: '  '
-        :param cow: the available cows can be found by calling list_cows = default: 'default'
+            :param text: The message to be displayed
+            :param eyes: eye_string = default: 'oo'
+            :param tongue: tongue_string = default: '  '
+            :param cow: the available cows can be found by calling list_cows = default: 'default'
         
         """
-        text, named_params  = self.get_cow_do_opts(args)
+        text, named_params  = self._get_cow_do_opts(args)
         print(cowsay.cowthink(text, **named_params))
 
     @staticmethod
-    def get_cow_do_opts(args):
+    def _get_cow_do_opts(args):
+        """Iternal function for params handling
+
+        """
         text, *options = shlex.split(args)
         named_params = {"cow": "default", "eyes": "oo", "tongue": "  "}
         if options:
