@@ -52,8 +52,8 @@ class cowsay_cmd(cmd.Cmd):
         :param cow: the available cows can be found by calling list_cows = default: 'default'
 
         """
-        text, eyes, tongue, cow = self.get_cow_do_opts(args)
-        print(cowsay.cowsay(text, eyes=eyes, tongue=tongue, cow=cow))
+        text, named_params = self.get_cow_do_opts(args)
+        print(cowsay.cowsay(text, **named_params))
 
     def do_cowthink(self, args):
         """Similar to the cowsay command. Parameters are listed with their
@@ -66,26 +66,24 @@ class cowsay_cmd(cmd.Cmd):
         :param cow: the available cows can be found by calling list_cows = default: 'default'
         
         """
-        text, eyes, tongue, cow = self.get_cow_do_opts(args)
-        print(cowsay.cowthink(text, eyes=eyes, tongue=tongue, cow=cow))
+        text, named_params  = self.get_cow_do_opts(args)
+        print(cowsay.cowthink(text, **named_params))
 
     @staticmethod
     def get_cow_do_opts(args):
         text, *options = shlex.split(args)
-        eyes = "oo"
-        tongue = "  "
-        cow = "default"
+        named_params = {"cow": "default", "eyes": "oo", "tongue": "  "}
         if options:
             assert len(options) % 2 == 0, "Bad parameters"
             for opt, val in zip(options[::2], options[1::2]):
                 if opt == "-e":
-                    eyes = val[:2]
+                    named_params["eyes"] = val[:2]
                 elif opt == "-T":
-                    tongue = val[:2]
+                    named_params["tongue"] = val[:2]
                 elif opt == "-f":
                     assert val in cowsay.list_cows(), "Invalid cow"
-                    cow = val
-        return text, eyes, tongue, cow
+                    named_params["cow"] = val
+        return text, named_params
 
 if __name__ == "__main__":
     cowsay_cmd(completekey="k").cmdloop()
