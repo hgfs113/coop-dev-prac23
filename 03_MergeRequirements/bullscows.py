@@ -7,6 +7,14 @@ from urllib.request import urlopen
 
 from cowsay import cowsay, get_random_cow
 
+MY_CUSTOM_COW = """
+    ^ ____^
+   / o  o \\
+  |  -v-  |
+   \______/               /
+        I--------------I--
+        I--------------I
+        I              I"""
 
 def parse_args():
     parser = ArgumentParser()
@@ -53,9 +61,9 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 
 def ask(prompt: str, valid: list[str] = None) -> str:
-    word = input(cowsay(prompt, cow=get_random_cow()) + '\n')
+    word = input(cowsay(prompt, cowfile=MY_CUSTOM_COW) + '\n')
     while valid and word not in valid:
-        word = input(cowsay(prompt, cow=get_random_cow()) + '\n')
+        word = input(cowsay(prompt, cowfile=MY_CUSTOM_COW) + '\n')
     return word
 
 
