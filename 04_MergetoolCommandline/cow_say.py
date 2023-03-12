@@ -4,6 +4,10 @@ import shlex
 import cowsay
 
 
+EYES_PROMPT = ["xx", "XX", "oo", "OO", "oO", "Oo", "-O", "O-", "--", "^^", "щщ"]
+TONGUE_PROMPTS = ["ll", "Ll", "LL", "II", "ii", "U ", " U", "[]"]
+
+
 class cowsay_cmd(cmd.Cmd):
     prompt = "cowshell# "
 
@@ -42,6 +46,24 @@ class cowsay_cmd(cmd.Cmd):
                     wrap_text = val.lower() == "true" or val.lower() == "y" or \
                             val.lower() == "yes" or val.lower() == "da"
         print(cowsay.make_bubble(text, brackets=brackets, width=width, wrap_text=wrap_text))
+
+    def complete_make_bubble(self, text, line, begidx, endidx):
+        args = shlex.split(line)
+        if len(args) < 3:
+            return []
+        if begidx != endidx:
+            control_key = args[-2]
+        else:
+            control_key = args[-1]
+        print(control_key)
+        if control_key == "-b":
+            prompts = ["cowsay", "cowthink"]
+        elif control_key == "-w":
+            prompts = ["True", "true", "yes", "Yes", "Da", "da", "False", "false", "No", "no", "Net", "net"]
+        else:
+            return []
+
+        return list(filter(lambda x: x.startswith(text), prompts))
 
     def do_cowsay(self, args):
         """Similar to the cowsay command. Parameters are listed with their
@@ -90,5 +112,32 @@ class cowsay_cmd(cmd.Cmd):
                     named_params["cow"] = val
         return text, named_params
 
+    def complete_cowsay(self, text, line, begidx, endidx):
+        return self._complete_cow_star(text, line, begidx, endidx)
+
+    def complete_cowthink(self, text, line, begidx, endidx):
+        return self._complete_cow_star(text, line, begidx, endidx)
+
+    @staticmethod
+    def _complete_cow_star(text, line, begidx, endidx):
+        line = shlex.split(line)
+        if len(args) < 3:
+            return []
+        if begidx != endidx:
+            control_key = args[-2]
+        else:
+            control_key = args[-1]
+        if control_key == "-e":
+            prompts = EYES_PROMPT
+        elif control_key == "-T":
+            prompts = TONGUE_PROMPTS
+        elif control_key == "-f":
+            prompts = cowsay.list_cows()
+        else:
+            return []
+
+        return list(filter(lambda x: x.startswith(text), prompts))
+
+
 if __name__ == "__main__":
-    cowsay_cmd(completekey="k").cmdloop()
+    cowsay_cmd().cmdloop()
