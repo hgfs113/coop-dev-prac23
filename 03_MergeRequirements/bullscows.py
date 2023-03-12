@@ -5,6 +5,8 @@ import sys
 from argparse import ArgumentParser
 from urllib.request import urlopen
 
+from cowsay import cowsay, get_random_cow
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -51,14 +53,14 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 
 def ask(prompt: str, valid: list[str] = None) -> str:
-    word = input(prompt)
+    word = input(cowsay(prompt, cow=get_random_cow()) + '\n')
     while valid and word not in valid:
-        word = input(prompt)
+        word = input(cowsay(prompt, cow=get_random_cow()) + '\n')
     return word
 
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(format_string.format(bulls, cows), file=sys.stdout)
+    print(cowsay(format_string.format(bulls, cows), cow=get_random_cow()), file=sys.stdout)
 
 
 if __name__ == "__main__":
